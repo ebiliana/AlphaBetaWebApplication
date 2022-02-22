@@ -10,6 +10,7 @@ using AlphaBetaWebApplication.Data;
 using AlphaBetaWebApplication.Models;
 using MailKit.Net.Smtp;
 using MimeKit;
+using System.Net.Mail;
 
 namespace AlphaBetaWebApplication.Controllers
 {
@@ -27,29 +28,55 @@ namespace AlphaBetaWebApplication.Controllers
         {
             return View(await _context.User.ToListAsync());
         }
-      
-            private void Mailsender(User user)
+
+        //    private void Mailsender(User user)
+        //    {
+        //    MimeMessage message = new MimeMessage();
+
+        //    MailboxAddress from = new MailboxAddress("Admin",
+        //    "admin@example.com");
+        //    message.From.Add(from);
+
+        //    MailboxAddress to = new MailboxAddress("User",
+        //    user.Email);
+        //    message.To.Add(to);
+
+        //    message.Subject = "User Successfully Registered";
+        //    BodyBuilder bodyBuilder = new BodyBuilder();
+        //    bodyBuilder.HtmlBody = "<h1>Hi, you are Successfully Registered </h1>";
+        //    bodyBuilder.TextBody = " please create password to login    Username: " + user.userName;
+        //    message.Body = BodyBuilder.ToMessageBody();
+        //    client.Send(message);
+        //    client.Disconnect(true);
+        //    client.Dispose();
+        //}
+
+        public bool Mailsender(User user)
+        {
+            MailMessage mailMessage = new MailMessage();
+            mailMessage.From = new MailAddress("aduku.lilian@gmail.com");
+            mailMessage.To.Add(new MailAddress(user.Email));
+            mailMessage.Subject = "User Successfully Registered";
+            BodyBuilder bodyBuilder = new BodyBuilder();           
+            bodyBuilder.TextBody = "Hi, you are Successfully Registered please create password to login    Username: " + user.userName;            
+            mailMessage.IsBodyHtml = false;
+            mailMessage.Body = bodyBuilder.TextBody;
+            System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient("smtp.gmail.com");
+            client.Credentials = new System.Net.NetworkCredential("aduku.lilian@gmail.com", "wealth3.");
+            client.Host = "smtpout.secureserver.net";
+            client.Port = 578;
+
+            try
             {
-            MimeMessage message = new MimeMessage();
-
-            MailboxAddress from = new MailboxAddress("Admin",
-            "admin@example.com");
-            message.From.Add(from);
-
-            MailboxAddress to = new MailboxAddress("User",
-            user.Email);
-            message.To.Add(to);
-
-            message.Subject = "User Successfully Registered";
-            BodyBuilder bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = "<h1>Hi, you are Successfully Registered </h1>";
-            bodyBuilder.TextBody = " please create password to login    Username: " + user.userName;
-            message.Body = BodyBuilder.ToMessageBody();
-            client.Send(message);
-            client.Disconnect(true);
-            client.Dispose();
+                client.Send(mailMessage);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // log exception
+            }
+            return false;
         }
-        
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
